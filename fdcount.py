@@ -11,12 +11,12 @@ ENV_STRICT =  'fdcount_strict'  # if set use full path to executable instead of 
 
 # Output templates
 CONFIG = '\n'.join((
-    'graph_title Number of open files for {target}',
-    'graph_vlabel files',
+    'graph_title Open file descriptors for {target}',
+    'graph_vlabel file descriptors',
     'graph_category fs',
 ))
 PROCESS_CONFIG = '\n'.join((
-    'pid{pid}.label {pid}',
+    'pid{pid}.label PID {pid}',
     'pid{pid}.min 0',
 ))
 PROCESS_FETCH = '\n'.join((
