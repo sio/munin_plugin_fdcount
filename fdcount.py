@@ -24,6 +24,7 @@ PROCESS_FETCH = '\n'.join((
 ))
 
 
+import json
 import os
 import sys
 from glob import glob
@@ -57,6 +58,21 @@ def count_fds(pid, not_available='U'):
         return len(os.listdir('/proc/{}/fd/'.format(pid)))
     except Exception:
         return not_available
+
+
+def munin_state_read():
+    '''Read saved state from previous plugin run'''
+    try:
+        with os.getenv('MUNIN_STATEFILE') as statefile:
+            return json.load(statefile)
+    except Exception:
+        return {}
+
+
+def munin_state_write(state):
+    '''Save plugin state for the next run'''
+    with os.getenv('MUNIN_STATEFILE') as statefile:
+        json.dump(state, statefile)
 
 
 def munin_config():
