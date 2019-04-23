@@ -48,9 +48,11 @@ def find_processes(target, strict=False):
     Yield PIDs of processes that match given executable name.
     Use full executable's path if strict is True.
     '''
-    for filename in glob('/proc/*/exename'):
-        with open(filename) as exename:
-            executable = exename.read().strip()
+    for filename in glob('/proc/*/exe'):
+        try:
+            executable = os.readlink(filename)
+        except PermissionError:
+            continue
         if not strict:
             executable = os.path.basename(executable)
         if executable == target:
