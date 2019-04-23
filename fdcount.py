@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 Munin plugin for monitoring number of open file descriptors
 '''
