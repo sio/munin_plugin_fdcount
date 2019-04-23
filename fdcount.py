@@ -88,7 +88,7 @@ def munin_print(action=None):
     pids = new_pids.union(old_pids)
     munin_state_write(dict(pids=list(pids)))
 
-    if action == 'config'
+    if action == 'config':
         response = [CONFIG.format(**settings)]
         response += [PROCESS_CONFIG.format(pid=pid) for pid in pids]
     elif action is None:
