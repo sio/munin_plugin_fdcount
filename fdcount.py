@@ -51,9 +51,12 @@ def find_processes(target, strict=False):
             yield int(os.path.basename(os.path.dirname(filename)))
 
 
-def count_fds(pid):
+def count_fds(pid, not_available='U'):
     '''Return number of open files for a process with given PID'''
-    return len(os.listdir('/proc/{}/fd/'.format(pid)))
+    try:
+        return len(os.listdir('/proc/{}/fd/'.format(pid)))
+    except Exception:
+        return not_available
 
 
 def munin_config():
