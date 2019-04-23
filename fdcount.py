@@ -24,6 +24,11 @@ PROCESS_FETCH = '\n'.join((
 ))
 
 
+# Other constants
+ENV_STATEFILE = 'MUNIN_STATEFILE'
+UNDEFINED = 'U'
+
+
 import json
 import os
 import sys
@@ -52,7 +57,7 @@ def find_processes(target, strict=False):
             yield int(os.path.basename(os.path.dirname(filename)))
 
 
-def count_fds(pid, not_available='U'):
+def count_fds(pid, not_available=UNDEFINED):
     '''Return number of open files for a process with given PID'''
     try:
         return len(os.listdir('/proc/{}/fd/'.format(pid)))
@@ -63,7 +68,7 @@ def count_fds(pid, not_available='U'):
 def munin_state_read():
     '''Read saved state from previous plugin run'''
     try:
-        with os.getenv('MUNIN_STATEFILE') as statefile:
+        with open(os.getenv(ENV_STATEFILE)) as statefile:
             return json.load(statefile)
     except Exception:
         return {}
@@ -71,32 +76,34 @@ def munin_state_read():
 
 def munin_state_write(state):
     '''Save plugin state for the next run'''
-    with os.getenv('MUNIN_STATEFILE') as statefile:
+    with open(os.getenv(ENV_STATEFILE), 'w') as statefile:
         json.dump(state, statefile)
 
 
-def munin_config():
-    '''Output configuration values for munin plugin'''
+def munin_print(action=None):
+    '''Print information that Munin expects'''
     settings = configure()
-    pids = find_processes(**settings)
-    header = [CONFIG.format(**settings)]
-    body = [PROCESS_CONFIG.format(pid=pid) for pid in pids]
-    print('\n'.join(header + body))
+    new_pids = set(find_processes(**settings))
+    old_pids = set(munin_state_read().get('pids', []))
+    pids = new_pids.union(old_pids)
+    munin_state_write(dict(pids=list(pids)))
 
-
-def munin_fetch():
-    '''Output data for munin-fetch'''
-    settings = configure()
-    pids = find_processes(**settings)
-    body = (PROCESS_FETCH.format(pid=pid, value=count_fds(pid)) for pid in pids)
-    print('\n'.join(body))
+    if action == 'config'
+        response = [CONFIG.format(**settings)]
+        response += [PROCESS_CONFIG.format(pid=pid) for pid in pids]
+    elif action is None:
+        response = [PROCESS_FETCH.format(pid=pid, value=count_fds(pid)) for pid in new_pids]
+        response += [PROCESS_FETCH.format(pid=pid, value=UNDEFINED) for pid in old_pids.difference(new_pids)]
+    else:
+        raise ValueError('invalid action: {}'.format(action))
+    print('\n'.join(response))
 
 
 def main():
     if len(sys.argv) == 1:
-        munin_fetch()
+        munin_print()
     elif sys.argv[1] == 'config':
-        munin_config()
+        munin_print('config')
     else:
         raise ValueError('invalid arguments: {}'.format(' '.join(sys.argv[1:])))
 
