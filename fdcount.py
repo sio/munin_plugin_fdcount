@@ -51,7 +51,7 @@ def find_processes(target, strict=False):
     for filename in glob('/proc/*/exe'):
         try:
             executable = os.readlink(filename)
-        except PermissionError:
+        except OSError:
             continue
         if not strict:
             executable = os.path.basename(executable)
