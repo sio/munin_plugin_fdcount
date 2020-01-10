@@ -25,6 +25,8 @@ This plugin MUST be configured before use:
   (required)
 - `env.fdcount_strict` - if this variable is set, `env.fdcount_target` must
   contain full executable path instead of just the filename
+- `env.fdcount_track_pids` - if this variable is set, processes will be
+  distinguished based on their PID instead of just command line
 - `user` - either `root` or the user that started the processes in
   question
 
