@@ -31,6 +31,7 @@ CONFIG = '\n'.join((
     'graph_title Open file descriptors for {target}',
     'graph_vlabel file descriptors',
     'graph_category fs',
+    'graph_args --lower-limit 0 --base 1000',
 ))
 PROCESS_CONFIG = '\n'.join((
     'fd_{label}.label {command}',
