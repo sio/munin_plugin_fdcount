@@ -11,7 +11,7 @@ Tested on Debian Stable, other setups should work fine but were not tried yet.
 This plugin tracks number of open files for all processes of the specified
 program. Each process is represented by its own line in the chart.
 
-<!-- TODO: add an example of generated chart -->
+![Graph example](example.png)
 
 
 ## Installation and usage
